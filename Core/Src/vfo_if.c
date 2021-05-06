@@ -57,21 +57,21 @@ void vfo_init (void)
 
 void vfo_set_freq (void)
 {
-  uint32_t if_freq  = 500000U;
+  uint32_t bfo_freq  = 500000U;
   uint32_t vfo_freq = (uint32_t) trx.vfoa;
 
   if (trx.vfo) { vfo_freq = (uint32_t) trx.vfob; }
 
-  vfo_freq += if_freq;
+  vfo_freq += bfo_freq;
 
   if (trx.is_tx)
   {
     //si5351_set_freq (vfo_freq, SI5351_CLK0);
-    //si5351_set_freq (if_freq,  SI5351_CLK2);
+    //si5351_set_freq (bfo_freq, SI5351_CLK2);
   }
   else
   {
-    //si5351_set_freq (if_freq,  SI5351_CLK0);
+    //si5351_set_freq (bfo_freq, SI5351_CLK0);
     //si5351_set_freq (vfo_freq, SI5351_CLK2);
   }
 }
