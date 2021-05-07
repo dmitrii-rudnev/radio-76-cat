@@ -32,14 +32,8 @@ extern "C" {
 typedef struct
 {
   uint8_t is_enable;
-  uint8_t key_is_straight;
   uint8_t cat_is_on;
-  uint8_t dtr_is_on;
-  uint8_t rts_is_on;
-  uint8_t button_is_on;
-  uint8_t key_dah_is_on;
-  uint8_t key_dit_is_on;
-  uint32_t key_off_time;
+  uint8_t ptt_is_on;
 } PTT_TypeDef;
 
 /* Exported constants --------------------------------------------------------*/
@@ -50,12 +44,8 @@ typedef struct
 void PTT_Init (void);
 void PTT_Set_Mode (uint8_t);
 void PTT_CAT_TX (uint8_t);
-void PTT_DTR_TX (uint8_t);
-void PTT_RTS_TX (uint8_t);
-void PTT_Handler (void);
 
 /* Private defines -----------------------------------------------------------*/
-#define KEY_TIMEOUT   30 // 300 ms
 
 #ifdef __cplusplus
 }

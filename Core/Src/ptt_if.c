@@ -21,7 +21,6 @@
 #include "main.h"
 #include "ptt_if.h"
 #include "vfo_if.h"
-//#include "dsp_if.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -50,8 +49,6 @@ extern TRX_TypeDef trx;
 
 void ptt_set_tx (void)
 {
-  ptt.key_off_time = 0U;
-
   if (!trx.is_tx)
   {
     if (trx.split) { VFO_Toggle_VFO (); }
@@ -73,8 +70,7 @@ void ptt_set_tx (void)
 
 void ptt_set_rx (void)
 {
-  if (ptt.cat_is_on || ptt.button_is_on || ptt.key_dah_is_on
-      || ptt.key_dit_is_on || ptt.dtr_is_on || ptt.rts_is_on) return;
+  if (ptt.cat_is_on || ptt.ptt_is_on) return;
 
   if (trx.is_tx)
   {
@@ -126,8 +122,6 @@ void PTT_Set_Mode (uint8_t trx_mode)
       trx.mode = MODE_USB;
       break;
   }
-
-  //DSP_Set_Mode (trx_mode);
 }
 
 
@@ -148,38 +142,6 @@ void PTT_CAT_TX (uint8_t cat)
 }
 
 /**
-  * @brief This function sets TX mode from DTR line
-  *
-  */
-
-void PTT_DTR_TX (uint8_t dtr)
-{
-  if (ptt.dtr_is_on != dtr)
-  {
-    ptt.dtr_is_on = dtr;
-
-    if (dtr) { ptt_set_tx (); }
-    else { ptt.key_off_time = trx.sysclock; }
-  }
-}
-
-/**
-  * @brief This function sets TX mode from RTS line
-  *
-  */
-
-void PTT_RTS_TX (uint8_t rts)
-{
-  if (ptt.rts_is_on != rts)
-  {
-    ptt.rts_is_on = rts;
-
-    if (rts) { ptt_set_tx (); }
-    else { ptt_set_rx (); }
-  }
-}
-
-/**
   * @brief This function initialize PTT, VFO and DSP
   *
   */
@@ -192,25 +154,6 @@ void PTT_Init (void)
   trx.mode = MODE_LSB;
 
   VFO_Init ();
-}
-
-
-/**
-  * @brief This function processes the timeout in switching to RX mode
-  * after releasing the telegraph key
-  *
-  */
-
-void PTT_Handler (void)
-{
-  if (ptt.key_off_time != 0U)
-  {
-    if ((trx.sysclock - ptt.key_off_time) > KEY_TIMEOUT)
-    {
-      ptt.key_off_time = 0U;
-      ptt_set_rx ();
-    }
-  }
 }
 
 /**
@@ -227,27 +170,15 @@ void HAL_GPIO_EXTI_Callback (uint16_t GPIO_Pin)
   switch (GPIO_Pin)
   {
     case PTT_Pin:
-      ptt.button_is_on = !HAL_GPIO_ReadPin (PTT_GPIO_Port, PTT_Pin);
+      ptt.ptt_is_on = !HAL_GPIO_ReadPin (PTT_GPIO_Port, PTT_Pin);
 
-      if (ptt.button_is_on) { ptt_set_tx (); }
+      if (ptt.ptt_is_on) { ptt_set_tx (); }
       else { ptt_set_rx (); }
 
       break;
     case KEY_DAH_Pin:
-      ptt.key_dah_is_on = !HAL_GPIO_ReadPin (KEY_DAH_GPIO_Port, KEY_DAH_Pin);
-
-      if (ptt.key_dah_is_on) { ptt_set_tx (); }
-      else { ptt.key_off_time = trx.sysclock; }
-
-      //DSP_KEY_DAH ();
       break;
     case KEY_DIT_Pin:
-      ptt.key_dit_is_on = !HAL_GPIO_ReadPin (KEY_DIT_GPIO_Port, KEY_DIT_Pin);
-
-      if (ptt.key_dit_is_on) { ptt_set_tx (); }
-      else { ptt.key_off_time = trx.sysclock; }
-
-      //DSP_KEY_DIT ();
       break;
   }
 }

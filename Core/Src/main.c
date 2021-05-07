@@ -111,7 +111,6 @@ int main(void)
   while (1)
   {
     CAT_Handler ();
-    PTT_Handler ();
 
     /* USER CODE END WHILE */
 

@@ -249,21 +249,6 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
     break;
 
     case CDC_SET_CONTROL_LINE_STATE:
-    /* Send DTR and RTS states */
-    {
-      uint8_t dtr = 0;
-      uint8_t rts = 0;
-
-      if (pbuf [2] & 0x01) { dtr = 1; }
-      if (pbuf [2] & 0x02) { rts = 1; }
-
-      PTT_DTR_TX (dtr);  // PTT_DTR_TX() is declared in ptt_if.c
-      PTT_RTS_TX (rts);  // PTT_RTS_TX() is declared in ptt_if.c
-
-      break;
-    }
-
-    case CDC_SEND_BREAK:
 
     break;
 
